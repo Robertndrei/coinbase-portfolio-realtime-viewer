@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8" />
+      <title>Portfolio</title>
+
+      <link rel="preconnect" href="https://fonts.gstatic.com"> 
+      <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
+
+      <style>
+         * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            font-family: 'Inconsolata', monospace;
+            font-size: 16px;
+         }
+         body { 
+            width: 100vw;
+            height: 100vh;
+            background-color: #181d27;
+         }
+
+         #status{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 1000px;
+            background-color: grey;
+         }
+
+         #balance{
+            width: calc(100% - 300px);
+            height: 100%;
+            float: left;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+         }
+         #balance #mainBalance { 
+            list-style-type: 
+            none; margin: 0; 
+            padding: 0; 
+            font-size: 30rem;
+            color: #d6d6d6;
+            text-shadow: 0px 5px 5px #060606;
+            /*line-height: 300px;*/
+         }
+         #balance #secondaryBalance { 
+            list-style-type: 
+            none; margin: 0; 
+            padding: 0; 
+            font-size: 5rem;
+            color: #808080;
+            text-shadow: 0px 5px 5px #060606;
+         }
+
+         @media (max-width: 2100px) {
+            #balance #mainBalance { 
+               font-size: 22rem;
+               /*line-height: 200px;*/
+            }
+         }
+         @media (max-width: 1700px) {
+            #balance #mainBalance { 
+               font-size: 18rem;
+               /*line-height: 200px;*/
+            }
+         }
+         @media (max-width: 1400px) {
+            #balance #mainBalance { 
+               font-size: 14rem;
+               /*line-height: 200px;*/
+            }
+         }
+         @media (max-width: 1200px) {
+            #balance #mainBalance { 
+               font-size: 11rem;
+               line-height: 200px;
+            }
+         }
+         @media (max-width: 1000px) {
+            #balance #mainBalance { 
+               font-size: 8rem;
+               line-height: 170px;
+            }
+         }
+         @media (max-width: 600px) {
+            #balance #mainBalance { 
+               font-size: 7rem;
+               line-height: 120px;
+            }
+            #balance #secondaryBalance { 
+               font-size: 3rem;
+            }
+         }
+
+         #coins{
+            width: 300px;
+            height: 100%;
+            float: right;
+            overflow: auto;
+            padding-top: 50px;
+            padding-right: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+         }
+         #coins .coin{
+            height: 50px;
+            border-bottom: 1px solid #504f4f;
+            color: #d6d6d6;
+         }
+         #coins .coin:last-child{
+            border-bottom: none;
+         }
+         #coins .coin .name{
+            font-size: 1.2rem;
+            width: 50px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            float: left;
+         }
+         #coins .coin .mainBalance{
+            font-size: 1.5rem;
+            width: 120px;
+            height: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            float: left;
+         }
+         #coins .coin .amount{
+            font-size: 1rem;
+            color: grey;
+            width: calc(100% - 170px);
+            height: 50%;
+            float: right;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            text-align: right;
+            padding-left: 15px;
+            padding-top: 5px;
+         }
+         #coins .coin .price{
+            color: rgb(177, 177, 177);
+            font-size: 1rem;
+            width: calc(100% - 170px);
+            height: 50%;
+            float: right;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+         }
+      </style>
+   </head>
+   <body>
+      <div id="status"></div>
+
+      <div id="balance">
+         <div id="mainBalance"></div>
+         <div id="secondaryBalance"></div>
+      </div>
+
+      <div id="coins"></div>
+
+      <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+      <script>
+         var socket = io();
+
+         socket.on('connect', function() {
+            $("#status").css("background-color", "rgb(50, 255, 0)");
+         })
+         socket.on('disconnect', function() {
+            $("#status").css("background-color", "rgb(209, 14, 14)");
+         })
+         socket.on('error', function() {
+            $("#status").css("background-color", "rgb(255, 246, 0)");
+
+         })
+
+         // socket.emit('request', 'update');
+
+         socket.on('update', function(data){
+            // console.log(data);
+
+            if ( data._base === 'EUR' ) {
+               $('#mainBalance').html('€' + data._total_eur_worth.toFixed(2));
+               $('#secondaryBalance').html('$' + data._total_usd_worth.toFixed(2));
+            } else {
+               $('#mainBalance').html('$' + data._total_usd_worth.toFixed(2));
+               $('#secondaryBalance').html('€' + data._total_eur_worth.toFixed(2));
+            }
+
+            $('#coins').empty();
+
+            data._coins.map(coin => {
+               const price = data._currencies._currencies.filter(currency => currency._product_id === coin._ticker_id)[0]?._price?.toFixed(2);
+
+               if ( data._base === 'EUR' ) {
+                  $('#coins').append(
+                     '<div class="coin"> \
+                        <span class="name">' 
+                           + 
+                           coin._currency 
+                           + 
+                        '</span> \
+                        <span class="mainBalance">€' 
+                           + 
+                           coin._eur_worth.toFixed(2) 
+                           + 
+                        '</span> \
+                        <span class="amount">' 
+                           + 
+                           coin._balance 
+                           + 
+                        '</span> \
+                        <span class="price">€' 
+                           + 
+                           (price / data?._currencies?._eur_usd_price).toFixed(2) 
+                           +
+                        '</span></div>'
+                     );
+               } else {
+                  $('#coins').append(
+                     '<div class="coin"> \
+                        <span class="name">' 
+                           + 
+                           coin._currency 
+                           + 
+                        '</span> \
+                        <span class="mainBalance">$' 
+                           + 
+                           coin._usd_worth.toFixed(2) 
+                           + 
+                        '</span> \
+                        <span class="amount">' 
+                           +
+                           coin._balance 
+                           + 
+                        '</span> \
+                        <span class="price">$' 
+                           + 
+                           price 
+                           +
+                        '</span> \
+                     </div>'
+                  );
+               }
+            })
+         });
+      </script>
+   </body>
+</html>
