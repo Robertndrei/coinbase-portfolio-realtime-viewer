@@ -177,6 +177,10 @@
 
          socket.on('connect', function() {
             $("#status").css("background-color", "rgb(50, 255, 0)");
+
+            setTimeout(function() {
+               socket.emit('request', 'update')
+            }, 1000);
          })
          socket.on('disconnect', function() {
             $("#status").css("background-color", "rgb(209, 14, 14)");
@@ -186,7 +190,6 @@
 
          })
 
-         // socket.emit('request', 'update');
 
          socket.on('update', function(data){
             // console.log(data);

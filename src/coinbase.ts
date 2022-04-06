@@ -45,6 +45,12 @@ export class Coinbase {
          }
       })
 
+      this.clientSocketGateway.clientRequest.subscribe(data => {
+         if ( data === "update" ) {
+            this.clientSocketGateway.updateClient(this.portfolio);
+         }
+      })
+
       /**
        * Every price change
        */
