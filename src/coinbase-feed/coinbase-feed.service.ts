@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import {
-   InjectWebSocketProvider,
-   WebSocketClient,
-   OnOpen,
-   OnClose,
-   OnMessage,
-} from 'nestjs-websocket';
 import { BehaviorSubject } from 'rxjs';
+import * as WebSocket from "ws";
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CoinbaseFeedService {
 
+   /**
+    * Websocket
+    */
+   private ws: WebSocket;
+
+   private wsKeppAlive;
 
    /**
     * An observable that stores the connection state with the
@@ -26,31 +27,58 @@ export class CoinbaseFeedService {
    ticker = this._ticker.asObservable();
 
    constructor(
-      @InjectWebSocketProvider()
-      private readonly ws: WebSocketClient
-   ) {}
+      private configService: ConfigService
+   ) {
+      this.connect();
+   }
 
-   /**
-    * @ignore
-    */
-   @OnOpen()
-   onOpen() {
-      this._connected.next(true);
+   connect(){ 
+      this.ws = new WebSocket(this.configService.get<string>('COINBASE_PRO_WSS_FEED_URL'));
+
+      this.ws.on("open", () => {
+         this._connected.next(true);
+         this.ws.send(Math.random());
+      });
+
+      this.ws.on("error", (message) => {
+         this.ws.close()
+         this._connected.next(false);     
+      });
+
+      this.ws.on("close", (message) => {
+         setTimeout(() => {
+            this._connected.next(false);
+            this.connect();
+         }, 1000);
+      });
+
+      this.ws.on("message", (message) => {
+         //handler
+         this.message(message);
+      });
+
+      this.ws.on("pong", (message) => {
+         clearTimeout(this.wsKeppAlive);
+         this.wsKeppAlive = undefined;
+      })
+
+      setInterval(() => {
+         if ( this._connected.getValue() ) {
+            this.ws.ping(1);
+
+            if ( this.wsKeppAlive === undefined ) {
+               this.wsKeppAlive = setTimeout(() => {
+                  this.connect();
+               }, 30000);
+            }
+         }
+      }, 10000)
    }
 
    /**
     * @ignore
     */
-   @OnClose()
-   onClose() {
-      this._connected.next(false);
-   }
-
-   /**
-    * @ignore
-    */
-   @OnMessage()
-   message(data: WebSocketClient.Data) {
+   message(data: any) {
       let message;
 
       try {
