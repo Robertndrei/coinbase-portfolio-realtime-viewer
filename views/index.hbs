@@ -4,6 +4,8 @@
       <meta charset="utf-8" />
       <title>Portfolio</title>
 
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
       <link rel="preconnect" href="https://fonts.gstatic.com"> 
       <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
 
@@ -18,156 +20,220 @@
          body { 
             width: 100vw;
             height: 100vh;
-            background-color: #181d27;
+            background-color: rgb(7, 13, 18);
          }
 
-         #status{
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 20px;
-            height: 20px;
-            border-radius: 1000px;
-            background-color: grey;
-         }
-
-         #balance{
+         #balance-container{
             width: calc(100% - 300px);
             height: 100%;
             float: left;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            float: left;
+         }
+         #balance-container #balance{
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            padding-bottom: 20px;
          }
-         #balance #mainBalance { 
+         #balance-container #balance #mainBalance { 
             list-style-type: 
             none; margin: 0; 
             padding: 0; 
-            font-size: 30rem;
             color: #d6d6d6;
             text-shadow: 0px 5px 5px #060606;
             /*line-height: 300px;*/
          }
-         #balance #secondaryBalance { 
+         #balance-container #balance #secondaryBalance { 
             list-style-type: 
             none; margin: 0; 
             padding: 0; 
-            font-size: 5rem;
-            color: #808080;
+            color: #6d7174;
             text-shadow: 0px 5px 5px #060606;
          }
 
-         @media (max-width: 2100px) {
-            #balance #mainBalance { 
+         /*@media (max-width: 2100px) {
+            #balance-container #mainBalance { 
                font-size: 22rem;
-               /*line-height: 200px;*/
             }
          }
          @media (max-width: 1700px) {
-            #balance #mainBalance { 
+            #balance-container #mainBalance { 
                font-size: 18rem;
-               /*line-height: 200px;*/
             }
          }
          @media (max-width: 1400px) {
-            #balance #mainBalance { 
+            #balance-container #mainBalance { 
                font-size: 14rem;
-               /*line-height: 200px;*/
             }
          }
          @media (max-width: 1200px) {
-            #balance #mainBalance { 
+            #balance-container #mainBalance { 
                font-size: 11rem;
                line-height: 200px;
             }
          }
          @media (max-width: 1000px) {
-            #balance #mainBalance { 
+            #balance-container #mainBalance { 
                font-size: 8rem;
                line-height: 170px;
             }
          }
          @media (max-width: 600px) {
-            #balance #mainBalance { 
+            #balance-container #mainBalance { 
                font-size: 7rem;
                line-height: 120px;
             }
-            #balance #secondaryBalance { 
+            #balance-container #secondaryBalance { 
                font-size: 3rem;
             }
-         }
+         }*/
 
-         #coins{
+         /*#panel{
             width: 300px;
             height: 100%;
             float: right;
-            overflow: auto;
-            padding-top: 50px;
-            padding-right: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-         }
-         #coins .coin{
+            border-left: 1px solid #252b36;
+         }*/
+         #status{
+            width: 300px;
             height: 50px;
-            border-bottom: 1px solid #504f4f;
+            border-left: 1px solid #252b36;
+            border-bottom: 1px solid #252b36;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            float: right;
+         }
+         #status #status-indicator{
+            width: 20px;
+            height: 20px;
+            border-radius: 1000px;
+            background-color: grey;
+         }
+         #coins-container{
+            width: 300px;
+            height: calc(100% - 50px);
+            padding: 15px 20px;
+            overflow: auto;
+            float: right;
+            border-left: 1px solid #252b36;
+         }
+         #coins-container #coins{
+            width: 100%;
+            margin-top: 15px;
+         }
+         #coins-container #coins .coin{
+            height: 40px;
+            /*border-bottom: 1px solid #504f4f;*/
             color: #d6d6d6;
+            background-color: rgb(20,29,38);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            padding: 0 10px;
          }
-         #coins .coin:last-child{
-            border-bottom: none;
+         #coins-container #coins .coin:last-child{
+            margin-bottom: none;
          }
-         #coins .coin .name{
+         #coins-container #coins .coin .name{
             font-size: 1.2rem;
             width: 50px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            float: left;
          }
-         #coins .coin .mainBalance{
+         #coins-container #coins .coin .mainBalance{
             font-size: 1.5rem;
-            width: 120px;
-            height: 100%;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            float: left;
-         }
-         #coins .coin .amount{
-            font-size: 1rem;
-            color: grey;
-            width: calc(100% - 170px);
-            height: 50%;
-            float: right;
+            width: calc(100% - 130px);
+            text-align: right;
+            padding-right: 15px;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-            text-align: right;
-            padding-left: 15px;
-            padding-top: 5px;
+            display: block;
          }
-         #coins .coin .price{
-            color: rgb(177, 177, 177);
+         #coins-container #coins .coin .other{
+            width: 80px;
+            text-align: right;
+         }
+         #coins-container #coins .coin .amount{
             font-size: 1rem;
-            width: calc(100% - 170px);
-            height: 50%;
-            float: right;
-            display: flex;
-            justify-content: flex-end;
-            align-items: flex-start;
+            color: rgb(98 137 101);
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+         }
+         #coins-container #coins .coin .price{
+            color: rgb(183 152 104);
+            font-size: 1rem;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+         }
+
+         .title{
+            color: white;
+         }
+
+         @media (max-width: 850px) {
+            #status{
+               width: 100%;
+               border-left: none;
+               float: unset;
+            }
+
+            #balance-container { 
+               width: 100%;
+               height: fit-content;
+               float: unset;
+               border-bottom: 1px solid #252b36;
+               padding-bottom: 30px;
+            }
+            #balance-container #balance{
+               margin-top: 20px;
+            }
+
+            #coins-container{
+               width: 100%;
+               height: fit-content;
+               border-left: none;
+               float: unset;
+            }
          }
       </style>
    </head>
    <body>
-      <div id="status"></div>
 
-      <div id="balance">
-         <div id="mainBalance"></div>
-         <div id="secondaryBalance"></div>
+      <div id="status">
+         <span class="title">Status</span>
+         <div id="status-indicator"></div>
       </div>
 
-      <div id="coins"></div>
+      <div id="balance-container">
+         <span class="title">Value</span>
+         <div id="balance">
+            <div id="mainBalance"></div>
+            <div id="secondaryBalance"></div>
+         </div>
+      </div>
+
+      <!-- <div id="panel"> -->
+         
+         <div id="coins-container">
+            <span class="title">Portfolio</span>
+            <div id="coins"></div>
+         </div>
+      <!-- </div> -->
+
 
       <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
       <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -177,22 +243,21 @@
          var socket = io();
 
          socket.on('connect', function() {
-            $("#status").css("background-color", "rgb(50, 255, 0)");
+            $("#status-indicator").css("background-color", "rgb(50, 255, 0)");
 
             setTimeout(function() {
                socket.emit('request', 'update')
             }, 1000);
          })
          socket.on('disconnect', function() {
-            $("#status").css("background-color", "rgb(209, 14, 14)");
+            $("#status-indicator").css("background-color", "rgb(209, 14, 14)");
          })
          socket.on('error', function() {
-            $("#status").css("background-color", "rgb(255, 246, 0)");
-
+            $("#status-indicator").css("background-color", "rgb(255, 246, 0)");
          })
 
-
          socket.on('update', function(data){
+            // socket.disconnect();
             // console.log(data);
 
             if ( data._base === 'EUR' ) {
@@ -202,6 +267,8 @@
                $('#mainBalance').html('$' + data._total_usd_worth.toFixed(2));
                $('#secondaryBalance').html('€' + data._total_eur_worth.toFixed(2));
             }
+
+            resizeBalanceText();
 
             $('#coins').empty();
 
@@ -221,6 +288,7 @@
                            coin._eur_worth.toFixed(2) 
                            + 
                         '</span> \
+                        <div class="other"> \
                         <span class="amount">' 
                            + 
                            coin._balance 
@@ -230,7 +298,7 @@
                            + 
                            (price / data?._currencies?._eur_usd_price).toFixed(2) 
                            +
-                        '</span></div>'
+                        '</span></div></div>'
                      );
                } else {
                   $('#coins').append(
@@ -245,6 +313,7 @@
                            coin._usd_worth.toFixed(2) 
                            + 
                         '</span> \
+                        <div class="other"> \
                         <span class="amount">' 
                            +
                            coin._balance 
@@ -254,12 +323,27 @@
                            + 
                            price 
                            +
-                        '</span> \
+                        '</span></div> \
                      </div>'
                   );
                }
             })
          });
+
+         function resizeBalanceText() {
+            if ( $( window ).width() <= 850 ) {
+               $('#mainBalance').css('font-size', 'calc(1.6 * (100vw - 40px) / ' + $('#mainBalance').html().length + ')');
+               $('#secondaryBalance').css('font-size', 'calc(0.8 * (100vw - 40px) / ' + $('#secondaryBalance').html().length + ')');
+            } else if ( $( window ).width() > 850 && $( window ).width() <= 1800 ) {
+               $('#mainBalance').css('font-size', 'calc(1.6 * ((100vw - 300px) - 40px) / ' + $('#mainBalance').html().length + ')');
+               $('#secondaryBalance').css('font-size', 'calc(0.8 * ((100vw - 300px) - 40px) / ' + $('#secondaryBalance').html().length + ')');
+            } else {
+               $('#mainBalance').css('font-size', 'calc(1.6 * ((1800px - 300px) - 40px) / ' + $('#mainBalance').html().length + ')');
+               $('#secondaryBalance').css('font-size', 'calc(0.8 * ((1800px - 300px) - 40px) / ' + $('#secondaryBalance').html().length + ')');
+            }
+         }
+
+         $( window ).resize(resizeBalanceText);
       </script>
    </body>
 </html>
