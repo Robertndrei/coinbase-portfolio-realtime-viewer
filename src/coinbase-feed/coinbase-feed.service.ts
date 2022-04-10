@@ -11,7 +11,16 @@ export class CoinbaseFeedService {
     */
    private ws: WebSocket;
 
+   /**
+    * Keep alive watchdog
+    */
    private wsKeppAlive;
+
+   /**
+    * Store subscribed tickets to resusbscribe when connection lost and
+    * reconnect
+    */
+   private tickers: string[] = [];
 
    /**
     * An observable that stores the connection state with the
@@ -30,14 +39,19 @@ export class CoinbaseFeedService {
       private configService: ConfigService
    ) {
       this.connect();
+      this.init();
    }
 
-   connect(){ 
+   connect() {
       this.ws = new WebSocket(this.configService.get<string>('COINBASE_PRO_WSS_FEED_URL'));
+   }
 
+   init(){ 
       this.ws.on("open", () => {
          this._connected.next(true);
-         this.ws.send(Math.random());
+         // this.ws.send(Math.random());
+
+         this.tickers.length ? this.subscribe(this.tickers) : null;
       });
 
       this.ws.on("error", (message) => {
@@ -110,6 +124,8 @@ export class CoinbaseFeedService {
     * @param {string[]} tickers The tickers to subscribe
     */
    subscribe(tickers: string[]) {
+      this.tickers = tickers;
+
       let product_ids = [...new Set([...tickers, "BTC-EUR", "BTC-USD"])];
 
       return this.ws.send(JSON.stringify(

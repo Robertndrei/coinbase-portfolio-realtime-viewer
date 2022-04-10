@@ -25,11 +25,11 @@ All the configuration is stored in the `.env` file from the root directory.
 You need to generate Coinbase Pro API keys from here: [Coinbase](https://pro.coinbase.com/profile/api)
 
 ```env
-PORT=3000				# Webserver port
+PORT=3000   # Webserver port
 
-BASE_CURRENCY=EUR		# EUR or USD
+BASE_CURRENCY=EUR    # EUR or USD
 
-TERMINAL_OUTPUT=false	# To show the portfolio in the terminal
+TERMINAL_OUTPUT=false   # To show the portfolio in the terminal
 
 COINBASE_PRO_API_KEY=
 COINBASE_PRO_API_SECRET=
