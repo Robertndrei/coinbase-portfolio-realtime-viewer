@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BehaviorSubject } from 'rxjs';
 import * as WebSocket from "ws";
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class CoinbaseFeedService {
@@ -35,39 +36,45 @@ export class CoinbaseFeedService {
    private _ticker = new BehaviorSubject<any>(undefined);
    ticker = this._ticker.asObservable();
 
+   /**
+    * Logger
+    */
+   private readonly logger = new Logger("CoinbaseFeedService");
+
    constructor(
       private configService: ConfigService
    ) {
       this.connect();
-      this.init();
+      this.initWatchdog();
    }
 
    connect() {
       this.ws = new WebSocket(this.configService.get<string>('COINBASE_PRO_WSS_FEED_URL'));
-   }
 
-   init(){ 
       this.ws.on("open", () => {
          this._connected.next(true);
-         // this.ws.send(Math.random());
-
+         this.wsKeppAlive = undefined;
          this.tickers.length ? this.subscribe(this.tickers) : null;
+
+         this.logger.log("Coinbase websocket oppened");
       });
 
       this.ws.on("error", (message) => {
          this.ws.close()
-         this._connected.next(false);     
+         this._connected.next(false);
+         this.wsKeppAlive = undefined;
+
+         this.logger.error("Coinbase websocket error");
       });
 
       this.ws.on("close", (message) => {
-         setTimeout(() => {
-            this._connected.next(false);
-            this.connect();
-         }, 1000);
+         this._connected.next(false);
+         this.wsKeppAlive = undefined;
+
+         this.logger.warn("Coinbase websocket closed");
       });
 
       this.ws.on("message", (message) => {
-         //handler
          this.message(message);
       });
 
@@ -75,18 +82,25 @@ export class CoinbaseFeedService {
          clearTimeout(this.wsKeppAlive);
          this.wsKeppAlive = undefined;
       })
+   }
 
+   initWatchdog(){ 
       setInterval(() => {
          if ( this._connected.getValue() ) {
-            this.ws.ping(1);
+            try{
+               this.ws.ping(1);
+            } catch(e) {}
+         } 
 
-            if ( this.wsKeppAlive === undefined ) {
-               this.wsKeppAlive = setTimeout(() => {
+         if ( this.wsKeppAlive === undefined ) {
+            this.wsKeppAlive = setTimeout(() => {
+               if ( !this._connected.getValue() ) {
+                  this.logger.warn("Pong not received, reconnecting...");
                   this.connect();
-               }, 30000);
-            }
+               }
+            }, 5000);
          }
-      }, 10000)
+      }, 5000)
    }
 
    /**
