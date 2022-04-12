@@ -18,6 +18,11 @@ export class CoinbaseFeedService {
    private wsKeppAlive;
 
    /**
+    * Activity monitor
+    */
+   private activityMonitor;
+
+   /**
     * Store subscribed tickets to resusbscribe when connection lost and
     * reconnect
     */
@@ -76,6 +81,7 @@ export class CoinbaseFeedService {
 
       this.ws.on("message", (message) => {
          this.message(message);
+         this.resetActivityMonitor();
       });
 
       this.ws.on("pong", (message) => {
@@ -101,6 +107,16 @@ export class CoinbaseFeedService {
             }, 5000);
          }
       }, 5000)
+   }
+
+   resetActivityMonitor() {
+      clearTimeout(this.activityMonitor);
+      this.activityMonitor = setTimeout(() => {
+         // Close de socket, the watchdog will launch it again
+         this.ws.close();
+
+         this.logger.warn("No activity detected during 5 min. Closing socket...");
+      }, 300000);
    }
 
    /**
