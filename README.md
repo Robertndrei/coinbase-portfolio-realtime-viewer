@@ -31,10 +31,9 @@ BASE_CURRENCY=EUR    # EUR or USD
 
 TERMINAL_OUTPUT=false   # To show the portfolio in the terminal
 
-COINBASE_PRO_API_KEY=
-COINBASE_PRO_API_SECRET=
-COINBASE_PRO_PASSPHRASE=
-COINBASE_PRO_WSS_FEED_URL=wss://ws-feed.pro.coinbase.com
+COINBASE_API_KEY=
+COINBASE_API_SECRET=
+COINBASE_WSS_FEED_URL=wss://ws-feed.exchange.coinbase.com
 ```
 
 ## Running the app
