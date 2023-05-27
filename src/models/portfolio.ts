@@ -134,8 +134,8 @@ export class Coin {
    private _currency: string;
    private _balance: number;
    private _ticker_id: string;
-   private _usd_worth: number;
-   private _eur_worth: number;
+   private _usd_worth: number = 0;
+   private _eur_worth: number = 0;
 
    constructor(
       id: string,
@@ -192,10 +192,14 @@ export class Coin {
    calculateWorth( currency: Currency, eurUsdCurrency?: Currency ) {
       if ( currency !== undefined ) {
          this._usd_worth = currency.price * this._balance;
+      } else {
+         this._usd_worth = 0;
       }
 
-      if ( eurUsdCurrency !== undefined ) {
+      if ( eurUsdCurrency !== undefined && currency !== undefined ) {
          this._eur_worth = this._usd_worth / eurUsdCurrency.price;
+      } else {
+         this._eur_worth = 0;
       }
    }
 }

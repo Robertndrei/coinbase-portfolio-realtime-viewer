@@ -3,6 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import * as WebSocket from "ws";
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { createHmac } from 'crypto';
 
 @Injectable()
 export class CoinbaseFeedService {
@@ -47,14 +49,15 @@ export class CoinbaseFeedService {
    private readonly logger = new Logger("CoinbaseFeedService");
 
    constructor(
-      private configService: ConfigService
+      private configService: ConfigService,
+      private readonly httpService: HttpService
    ) {
       this.connect();
       this.initWatchdog();
    }
 
    connect() {
-      this.ws = new WebSocket(this.configService.get<string>('COINBASE_PRO_WSS_FEED_URL'));
+      this.ws = new WebSocket(this.configService.get<string>('COINBASE_WSS_FEED_URL'));
 
       this.ws.on("open", () => {
          this._connected.next(true);
@@ -185,4 +188,39 @@ export class CoinbaseFeedService {
       ));
    }
 
+   async getAccounts(userAccounts: any[] = [], nextUrl: string | undefined = undefined): Promise<any[]> {
+      //get unix time in seconds
+      var timestamp = Math.floor(Date.now() / 1000);
+
+      // set the parameter for the request message
+      var req = {
+         method: 'GET',
+         path: !!nextUrl ? nextUrl : '/v2/accounts',
+         body: ''
+      };
+
+      var message = timestamp + req.method + req.path + req.body;
+
+      var signature = createHmac("sha256", this.configService.get<string>('COINBASE_API_SECRET'))
+         .update(message)
+         .digest("hex");
+
+      var headers = {
+         'CB-ACCESS-SIGN': signature,
+         'CB-ACCESS-TIMESTAMP': timestamp,
+         'CB-ACCESS-KEY': this.configService.get<string>('COINBASE_API_KEY'),
+         'CB-VERSION': '2015-07-22'
+      }
+
+      const response = await this.httpService.axiosRef.get(`https://api.coinbase.com${req.path}`, {headers});
+      let accounts = response.data.data;
+
+      userAccounts = [...userAccounts, ...accounts];
+
+      if ( response.data.pagination.next_uri !== null ) {
+         return await this.getAccounts(userAccounts, response.data.pagination.next_uri);
+      } else {
+         return userAccounts;
+      }
+   }
 }

@@ -1,7 +1,5 @@
 import { ConfigService } from '@nestjs/config';
 
-import { CoinbasePro } from 'coinbase-pro-node';
-
 import { Currencies, Currency } from './models/currencies';
 import { Portfolio, Coin } from './models/portfolio';
 
@@ -10,25 +8,7 @@ import { CoinbaseFeedService } from './coinbase-feed/coinbase-feed.service';
 
 export class Coinbase {
 
-   /**
-    * Coinbase PRO client
-    */
-   private _client: CoinbasePro;
-
-   /**
-    * Coinbase service that gets price updates
-    */
-   private _coinbaseFeedService: CoinbaseFeedService;
-
-   /**
-    * Coinbase PRO client configuration
-    */
-   authPro = {
-      apiKey: this.configService.get<string>('COINBASE_PRO_API_KEY'),
-      apiSecret: this.configService.get<string>('COINBASE_PRO_API_SECRET'),
-      passphrase: this.configService.get<string>('COINBASE_PRO_PASSPHRASE'),
-      useSandbox: false
-   };
+   private _allAccounts: any[] = [];
 
    constructor( 
       private configService: ConfigService,
@@ -37,7 +17,6 @@ export class Coinbase {
       private readonly clientSocketGateway: ClientSocketGateway,
       private readonly coinbaseFeedService: CoinbaseFeedService
    ) {
-      this._client = new CoinbasePro( this.authPro );
 
       this.coinbaseFeedService.connected.subscribe(connected => {
          if ( connected ) {
@@ -90,30 +69,28 @@ export class Coinbase {
       setInterval(async () => {
          await this.requestPortfolio();
          this.coinbaseFeedService.subscribe( this.portfolio.getTickersId() );
-      }, 10000);
+      }, this.configService.get<number>('COINBASE_PORTFOLIO_REFRESH_INTERVAL') * 1000);
    }
 
    /**
     * Get user portfolio from Coinbase PRO platform
     */
    private async requestPortfolio() {
-      try {
-         let accounts = await this._client.rest.account.listAccounts();
-         
-         accounts
-            .filter(account => Number(account.balance) !== 0)
-            .forEach(account => {
+      this._allAccounts = await this.coinbaseFeedService.getAccounts(this._allAccounts);
 
-               this.portfolio.update(
-                  new Coin(
-                     account.id, 
-                     account.currency, 
-                     Number(account.balance)
-                  )
+      this._allAccounts
+         .filter(account => Number(account.balance.amount) !== 0)
+         .forEach(account => {
+
+            this.portfolio.update(
+               new Coin(
+                  account.id, 
+                  account.currency, 
+                  Number(account.balance.amount)
                )
-         })
+            )
+      })
 
-         this.portfolio.calculateWorth();
-      } catch(e) {}
+      this.portfolio.calculateWorth();
    }
 }
