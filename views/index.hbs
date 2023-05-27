@@ -261,11 +261,11 @@
             // console.log(data);
 
             if ( data._base === 'EUR' ) {
-               $('#mainBalance').html('€' + data._total_eur_worth.toFixed(2));
-               $('#secondaryBalance').html('$' + data._total_usd_worth.toFixed(2));
+               $('#mainBalance').html('€' + data._total_eur_worth?.toFixed(2));
+               $('#secondaryBalance').html('$' + data._total_usd_worth?.toFixed(2));
             } else {
-               $('#mainBalance').html('$' + data._total_usd_worth.toFixed(2));
-               $('#secondaryBalance').html('€' + data._total_eur_worth.toFixed(2));
+               $('#mainBalance').html('$' + data._total_usd_worth?.toFixed(2));
+               $('#secondaryBalance').html('€' + data._total_eur_worth?.toFixed(2));
             }
 
             resizeBalanceText();
@@ -285,7 +285,7 @@
                         '</span> \
                         <span class="mainBalance">€' 
                            + 
-                           coin._eur_worth.toFixed(2) 
+                           coin._eur_worth?.toFixed(2) 
                            + 
                         '</span> \
                         <div class="other"> \
@@ -296,7 +296,7 @@
                         '</span> \
                         <span class="price">€' 
                            + 
-                           (price / data?._currencies?._eur_usd_price).toFixed(2) 
+                           (price / data?._currencies?._eur_usd_price)?.toFixed(2) 
                            +
                         '</span></div></div>'
                      );
@@ -310,7 +310,7 @@
                         '</span> \
                         <span class="mainBalance">$' 
                            + 
-                           coin._usd_worth.toFixed(2) 
+                           coin._usd_worth?.toFixed(2) 
                            + 
                         '</span> \
                         <div class="other"> \
