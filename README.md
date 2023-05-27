@@ -34,7 +34,7 @@ TERMINAL_OUTPUT=false   # To show the portfolio in the terminal
 COINBASE_API_KEY=
 COINBASE_API_SECRET=
 COINBASE_WSS_FEED_URL=wss://ws-feed.exchange.coinbase.com
-COINBASE_PORTFOLIO_REFRESH_INTERVAL=600.  # In seconds (10 minutes by default)
+COINBASE_PORTFOLIO_REFRESH_INTERVAL=600  # In seconds (10 minutes by default)
 ```
 
 ## Running the app
